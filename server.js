@@ -6,8 +6,7 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
-const { v4: uuidv4 } = require('uuid');
-// const app = express();
+const {v4: uuidv4} = require('uuid');
 // ==============================================================================
 // EXPRESS CONFIGURATION
 // This sets up the basic properties for our express server
@@ -17,11 +16,11 @@ const { v4: uuidv4 } = require('uuid');
 var app = express();
 
 // Sets an initial port. We"ll use this later in our listener
-var PORT = process.env.PORT || 8080;
+var PORT = process.env.PORT || 3000;
 
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json(db));
+app.use(express.json());
 app.use(express.static('public'));
 
 // ================================================================================
@@ -34,47 +33,6 @@ app.use(express.static('public'));
 require("./routes/htmlRoutes")(app);
 require("./routes/apiRoutes")(app);
 
-// app.GET("api/notes", function(req,res){
-//   var readSavedNote = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
-//   var newNote = req.body;
-//   var uniqueId = (newNote.length).toString();
-//   newNote.id = uniqueId;
-//   savedNotes.push(newNote);
-
-//   fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
-//   console.log("Your file is being written. Content: ", newNote);
-//   res.JSON(readSavedNote);
-
-// })
-
-// // Deletes any selected note, filters over saved notes and reassigns new IDs to all strings.
-// app.delete("/api/notes/:id", function(req, res) {
-//   let readSavedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
-//   let noteID = req.params.id;
-//   let newID = 0;
-//   console.log(`Deleting note with ID ${noteID}`);
-//   readSavedNotes = readSavedNotes.filter(currNote => {
-//       return currNote.id != noteID;
-//   })
-//   for (currNote of readSavedNotes) {
-//     currNote.id = newID.toString();
-//     newID++;
-// }
-// for (currNote of readSavedsavedNotes) {
-//   currNote.id = newID.toString();
-//   newID++;
-// }
-
-// fs.writeFileSync("./db/db.json", JSON.stringify(savedNotes));
-// res.json(savedNotes);
-// })
-
-// app.post("/api/notes" function(req,res){
-//  var newNOTE = req.body
-//  console.log(newNote)
-//  notes.push(newNote)
-//  res.json(newNote)
-// });
 
 // =============================================================================
 // LISTENER
