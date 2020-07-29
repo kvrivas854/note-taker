@@ -1,43 +1,75 @@
-// ==============================================================================
-// DEPENDENCIES
-// Series of npm packages that we will use to give our server useful functionality
-// ==============================================================================
+//all the variables and libraries needed for this application
+const express = require ("express"),
+    path = require ("path"),
+    fs = require ("fs"),
+    app = express();
+    PORT = process.env.PORT || 3006;
+const { v4: uuidv4 } = require('uuid');
+    
 
-var express = require("express");
-var fs = require("fs");
-var path = require("path");
-const {v4: uuidv4} = require('uuid');
-// ==============================================================================
-// EXPRESS CONFIGURATION
-// This sets up the basic properties for our express server
-// ==============================================================================
 
-// Tells node that we are creating an "express" server
-var app = express();
-
-// Sets an initial port. We"ll use this later in our listener
-var PORT = process.env.PORT || 3000;
-
-// Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
+//set up body parsing, static and route middleware.
 app.use(express.json());
-app.use(express.static('public'));
-
-// ================================================================================
-// ROUTER
-// The below points our server to a series of "route" files.
-// These routes give our server a "map" of how to respond when users visit or request data from various URLs.
-// ================================================================================
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 
-require("./routes/htmlRoutes")(app);
-require("./routes/apiRoutes")(app);
+//routes to navigate both HTML files
+app.get('/notes', function (req, res) {
+  res.sendFile(__dirname + '/public/notes.html');
+});
+
+//api call to read and retrieve all notes as JSON, need to read the file as well 
+app.get("/api/notes", function(req, res) {
+    fs.readFile("./db/db.json", "utf8", function(err, data){
+      if (err) throw err;
+      console.log(data);
+      res.json(JSON.parse(data));
+    });
+  });
+  
+  
+// 
+app.post('/api/notes', function (req, res) {
+  // read db.json and convert it to an array of notes
+  const notes = JSON.parse(fs.readFileSync(__dirname + '/db/db.json'));
+  console.log(notes);
+  console.log("*****");
+  const newNote = req.body;
+  console.log(req.body);
+  newNote.id = uuidv4();
+  notes.push(newNote);
+  // rewrite to notes file
+  fs.writeFileSync(__dirname + '/db/db.json', JSON.stringify(notes));
+  // sending our notes as JSON data back to the client
+  res.json(notes);
+});
 
 
-// =============================================================================
-// LISTENER
-// The below code effectively "starts" our server
-// =============================================================================
+app.delete('/api/notes/:id', function (req, res) {
+  var id = req.params.id;
+  // read db.json and convert it to an array of notes
+  const deleteNotes = JSON.parse(fs.readFileSync(__dirname + '/db/db.json'));
+
+  // remove the note by its id
+  let newData = deleteNotes.filter(function(notes){
+    return notes.id != req.params.id;
+  });
+  console.log(newData);
+
+  // rewrite to the notes files, send notes as JSON data back to the client
+  fs.writeFileSync('./db/db.json', JSON.stringify(newData));
+
+  // sending our notes as JSON data back to the client
+  res.json(newData);
+});
+
+
 app.listen(PORT, function() {
-  console.log("App listening on PORT: " + PORT);
+  console.log('Express server listening on port ' + PORT);
+});
+
+// placing catch all route after all other functions
+app.get('*', function (req, res) {
+  res.sendFile(__dirname + '/public/index.html');
 });
