@@ -37,7 +37,7 @@ app.post('/api/notes', function (req, res) {
   console.log("*****");
   const newNote = req.body;
   console.log(req.body);
-  newNote.id = uuidv4();
+  newNote.id = uuid();
   notes.push(newNote);
   // rewrite to notes file
   fs.writeFileSync(__dirname + '/db/db.json', JSON.stringify(notes));
