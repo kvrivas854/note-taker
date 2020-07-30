@@ -2,9 +2,9 @@
 const express = require ("express"),
     path = require ("path"),
     fs = require ("fs"),
-    app = express(),
+    app = express();
     PORT = process.env.PORT || 3006;
-const { v4: uuidv4 } = require('uuid');
+const { uuid } = require('uuidv4');
     
 
 
@@ -19,6 +19,10 @@ app.get('/notes', function (req, res) {
   res.sendFile(__dirname + '/public/notes.html');
 });
 
+// placing catch all route after all other functions
+app.get('*', function (req, res) {
+  res.sendFile(__dirname + '/public/index.html');
+});
 //api call to read and retrieve all notes as JSON, need to read the file as well 
 app.get("/api/notes", function(req, res) {
     fs.readFile("./db/db.json", "utf8", function(err, data){
@@ -69,7 +73,3 @@ app.listen(PORT, function() {
   console.log('Express server listening on port ' + PORT);
 });
 
-// placing catch all route after all other functions
-app.get('*', function (req, res) {
-  res.sendFile(__dirname + '/public/index.html');
-});
