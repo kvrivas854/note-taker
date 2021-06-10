@@ -21,22 +21,19 @@ app.get('/notes', function (req, res) {
 
 //api call to read and retrieve all notes as JSON, need to read the file as well 
 app.get("/api/notes", function(req, res) {
-    fs.readFile("./db/db.json", "utf8", function(err, data){
-      if (err) throw err;
-      console.log(data);
-      res.json(JSON.parse(data));
-    });
+  fs.readFile("./db/db.json", "utf8", function(err, data) {
+    if (err) throw err;
+    console.log(data);
+    res.json(JSON.parse(data));
   });
+});
   
   
 // 
 app.post('/api/notes', function (req, res) {
   // read db.json and convert it to an array of notes
   const notes = JSON.parse(fs.readFileSync(__dirname + '/db/db.json'));
-  console.log(notes);
-  console.log("*****");
   const newNote = req.body;
-  console.log(req.body);
   newNote.id = uuid();
   notes.push(newNote);
   // rewrite to notes file
@@ -50,16 +47,12 @@ app.delete('/api/notes/:id', function (req, res) {
   var id = req.params.id;
   // read db.json and convert it to an array of notes
   const deleteNotes = JSON.parse(fs.readFileSync(__dirname + '/db/db.json'));
-
   // remove the note by its id
-  let newData = deleteNotes.filter(function(notes){
+  let newData = deleteNotes.filter(function(notes) {
     return notes.id != req.params.id;
   });
-  console.log(newData);
-
   // rewrite to the notes files, send notes as JSON data back to the client
   fs.writeFileSync('./db/db.json', JSON.stringify(newData));
-
   // sending our notes as JSON data back to the client
   res.json(newData);
 });
